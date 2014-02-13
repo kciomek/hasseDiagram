@@ -1,0 +1,4 @@
+S3method(drawDetails,hasseGrob)
+export(generateRandomData)
+export(hasse)
+importFrom(grid,drawDetails)

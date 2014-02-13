@@ -1,0 +1,32 @@
+\name{generateRandomData}
+\alias{generateRandomData}
+\title{Generate random data for hasse function}
+\usage{
+generateRandomData(nrNodes, minGraphs = 1, density = 0.5)
+}
+\arguments{
+  \item{nrNodes}{Numer of nodes (\code{0 < nrNodes}).}
+
+  \item{minGraphs}{Minimal number of graphs to generate
+  (\code{0 < minGraphs <= nrNodes}).}
+
+  \item{density}{Value which determines number of edges and
+  shape of graphs (\code{density in [0.0; 1.0]}).}
+}
+\value{
+\code{nrNodes} x \code{nrNodes} matrix.
+}
+\description{
+This function generates random data for \code{\link{hasse}}
+function.
+}
+\examples{
+data0_0 <- generateRandomData(15, 2, 0.0)
+data0_5 <- generateRandomData(15, 2, 0.5)
+data1_0 <- generateRandomData(15, 2, 1.0)
+
+#hasse(data0_0)
+#hasse(data0_5)
+#hasse(data1_0)
+}
+
