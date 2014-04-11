@@ -22,6 +22,7 @@
 #' \item \code{transitiveReduction} -- whether to perform transitive reduction
 #' (default \code{TRUE}).
 #' }
+#' @import Rgraphviz
 #' @examples
 #' randomData <- generateRandomData(15, 2, 0.5)
 #' hasse(randomData)

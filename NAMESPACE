@@ -1,4 +1,5 @@
 S3method(drawDetails,hasseGrob)
 export(generateRandomData)
 export(hasse)
+import(Rgraphviz)
 importFrom(grid,drawDetails)
