@@ -25,8 +25,8 @@ data0_0 <- generateRandomData(15, 2, 0.0)
 data0_5 <- generateRandomData(15, 2, 0.5)
 data1_0 <- generateRandomData(15, 2, 1.0)
 
-#hasse(data0_0)
-#hasse(data0_5)
-#hasse(data1_0)
+hasse(data0_0)
+hasse(data0_5)
+hasse(data1_0)
 }
 

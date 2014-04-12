@@ -6,7 +6,7 @@
 Drawing Hasse diagram
 }
 \description{
-This package provides method for drawing Hasse diagram - visualization of transitive reduction of a finite partially ordered set.
+Drawing Hasse diagram - visualization of transitive reduction of a finite partially ordered set.
 }
 \details{
 \tabular{ll}{

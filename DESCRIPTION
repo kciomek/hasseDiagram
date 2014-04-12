@@ -6,5 +6,5 @@ Date: 2014-02-13
 Author: Krzysztof Ciomek
 Maintainer: Krzysztof Ciomek <k.ciomek@gmail.com>
 Depends: Rgraphviz (>= 2.6.0), grid (>= 3.0.2)
-Description: This package provides method for drawing Hasse diagram - visualization of transitive reduction of a finite partially ordered set.
-License: MIT
+Description: Drawing Hasse diagram - visualization of transitive reduction of a finite partially ordered set.
+License: MIT + file LICENSE

@@ -28,11 +28,11 @@
 #' hasse(randomData)
 #' 
 #' # Clustering example
-#' # data <- matrix(data = FALSE, ncol = 4, nrow = 4)
-#' # data[1, 2] = data[1, 3] = data[2, 4] = data[3, 4] = TRUE
-#' # data[2, 3] = data[3, 2] = TRUE
-#' # hasse(data, c(), list(cluster = TRUE))
-#' # hasse(data, c(), list(cluster = FALSE))
+#' data <- matrix(data = FALSE, ncol = 4, nrow = 4)
+#' data[1, 2] = data[1, 3] = data[2, 4] = data[3, 4] = TRUE
+#' data[2, 3] = data[3, 2] = TRUE
+#' hasse(data, c(), list(cluster = TRUE))
+#' hasse(data, c(), list(cluster = FALSE))
 #'
 #' # Hasse to pdf example
 #' # randomData <- generateRandomData(15, 2, 0.5)
@@ -415,9 +415,9 @@ drawDetails.hasseGrob <- function(x, ...) {
 #' data0_5 <- generateRandomData(15, 2, 0.5)
 #' data1_0 <- generateRandomData(15, 2, 1.0)
 #' 
-#' #hasse(data0_0)
-#' #hasse(data0_5)
-#' #hasse(data1_0)
+#' hasse(data0_0)
+#' hasse(data0_5)
+#' hasse(data1_0)
 #' @export
 generateRandomData <- function(nrNodes, minGraphs = 1, density = 0.5) {
   stopifnot(nrNodes > 0)

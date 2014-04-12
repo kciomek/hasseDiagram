@@ -38,11 +38,11 @@ randomData <- generateRandomData(15, 2, 0.5)
 hasse(randomData)
 
 # Clustering example
-# data <- matrix(data = FALSE, ncol = 4, nrow = 4)
-# data[1, 2] = data[1, 3] = data[2, 4] = data[3, 4] = TRUE
-# data[2, 3] = data[3, 2] = TRUE
-# hasse(data, c(), list(cluster = TRUE))
-# hasse(data, c(), list(cluster = FALSE))
+data <- matrix(data = FALSE, ncol = 4, nrow = 4)
+data[1, 2] = data[1, 3] = data[2, 4] = data[3, 4] = TRUE
+data[2, 3] = data[3, 2] = TRUE
+hasse(data, c(), list(cluster = TRUE))
+hasse(data, c(), list(cluster = FALSE))
 
 # Hasse to pdf example
 # randomData <- generateRandomData(15, 2, 0.5)
