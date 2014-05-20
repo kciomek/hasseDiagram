@@ -109,8 +109,10 @@ hasse <- function(data, labels = c(), parameters = list()) {
     }
   }
   
-  data <- data[-toRemove, -toRemove]
-  labels <- labels[-toRemove]
+  if (!is.null(toRemove)) {
+    data <- data[-toRemove, -toRemove]
+    labels <- labels[-toRemove]
+  }
   
   nrNodes <- nrow(data)
   
