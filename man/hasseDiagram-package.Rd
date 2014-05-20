@@ -12,8 +12,8 @@ Drawing Hasse diagram - visualization of transitive reduction of a finite partia
 \tabular{ll}{
 Package: \tab hasseDiagram\cr
 Type: \tab Package\cr
-Version: \tab 0.1\cr
-Date: \tab 2014-02-13\cr
+Version: \tab 0.1.1\cr
+Date: \tab 2014-05-20\cr
 License: \tab MIT\cr
 }
 }

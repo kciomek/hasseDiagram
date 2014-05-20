@@ -87,6 +87,7 @@ hasse <- function(data, labels = c(), parameters = list()) {
   
   # Cluster
   groups <- extractGroups(data)
+  toRemove <- c()
   
   for (group in groups) {
     for (i in group) {
@@ -103,11 +104,13 @@ hasse <- function(data, labels = c(), parameters = list()) {
         colnames(data)[first] <-
         names(labels)[first] <- paste(rownames(data)[group], collapse = "")
       
-      data <- data[-rest, -rest]
+      toRemove <- c(toRemove, rest)
       labels[[first]] <- c(unlist(labels[group]))
-      labels <- labels[-rest]
     }
   }
+  
+  data <- data[-toRemove, -toRemove]
+  labels <- labels[-toRemove]
   
   nrNodes <- nrow(data)
   
