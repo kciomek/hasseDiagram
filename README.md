@@ -8,12 +8,24 @@ This project is an [R](http://www.r-project.org "R project") package
 providing method for drawing Hasse diagram - visualization of transitive
 reduction of a finite partially ordered set.
 
+Installation
+------------
+
+[Install Rgraphviz](https://bioconductor.org/packages/release/bioc/html/Rgraphviz.html "Rgraphviz"):
+
+  source("https://bioconductor.org/biocLite.R")
+  biocLite("Rgraphviz")
+
+Then get the latest version from directly from CRAN:
+
+  install.packages("hasseDiagram")
+
 License
 -------
 
 The MIT License (MIT)
 
-Copyright (c) 2014 Krzysztof Ciomek
+Copyright (c) 2014-2017 Krzysztof Ciomek
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

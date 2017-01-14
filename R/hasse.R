@@ -39,6 +39,7 @@
 #' # pdf("path-for-diagram.pdf")
 #' # hasse(randomData, NULL, list(newpage = FALSE))
 #' # dev.off()
+#' @import Rgraphviz
 #' @export
 hasse <- function(data, labels = c(), parameters = list()) {
   stopifnot(is.matrix(data))
@@ -145,21 +146,20 @@ hasse <- function(data, labels = c(), parameters = list()) {
   
   # Perform transitive reduction
   if (parameters$transitiveReduction) {
-    for (i in seq_len(nrNodes)) {
-      for (j in seq_len(nrNodes)) {
-        if (data[i, j]) {
-          queue <- which(data[i, ])
-          queue <- queue[-c(which(queue == j))]
-          while (length(queue) > 0) {
-            first <- queue[1]
-            queue <- queue[-1]
-            if (first == j) {
-              data[i, j] <- FALSE
-              break
-            }
-            else {
-              queue <- c(queue, which(data[first, ]))
-            }
+    for (source in seq_len(nrNodes)) {
+      stack <- which(data[source, ])
+      visited <- rep(F, nrNodes)
+      visited[stack] <- T
+      
+      while (length(stack) > 0) {
+        element <- stack[1]
+        stack <- stack[-1]
+        
+        children <- which(data[element, ])
+        for (child in children) {
+          data[source, child] = FALSE
+          if (!visited[child]) {
+            stack <- c(child, stack)
           }
         }
       }
@@ -176,12 +176,19 @@ hasse <- function(data, labels = c(), parameters = list()) {
     queue <- queue[-1]
     dist <- distances[1]
     distances <- distances[-1]
-    children <- which(data[element, ] == TRUE)
+    children <- which(data[element, ])
     
     for (i in seq_len(length(children))) {
-      ranks[children[i]] <- dist + 1
-      queue <- c(queue, children[i])
-      distances <- c(distances, dist + 1)
+      idx <- which(queue == children[i])
+      
+      if (length(idx) == 0) {
+        ranks[children[i]] <- dist + 1
+        queue <- c(queue, children[i])
+        distances <- c(distances, dist + 1)
+      } else {
+        distances[idx] <- max(distances[idx], dist + 1)
+        ranks[children[i]] <- max(ranks[children[i]], dist + 1)
+      }
     }
   }
   
@@ -199,7 +206,6 @@ hasse <- function(data, labels = c(), parameters = list()) {
   for (i in seq_len(max(ranks))) {
     subGList[[length(subGList) + 1]] <- list(graph = subGraph(rownames(data)[which(ranks == i)], graph),
                                              cluster = FALSE)
-    #print (which(ranks == i))
   }
   
   ragraph <- agopen(graph,
