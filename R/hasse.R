@@ -43,6 +43,7 @@
 #' @importFrom graph subGraph
 #' @importFrom grid grid.newpage
 #' @importFrom grid grid.draw
+#' @importFrom methods as
 #' @export
 hasse <- function(data, labels = c(), parameters = list()) {
   stopifnot(is.matrix(data))
