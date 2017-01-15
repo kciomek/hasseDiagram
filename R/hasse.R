@@ -22,7 +22,6 @@
 #' \item \code{transitiveReduction} -- whether to perform transitive reduction
 #' (default \code{TRUE}).
 #' }
-#' @import Rgraphviz
 #' @examples
 #' randomData <- generateRandomData(15, 2, 0.5)
 #' hasse(randomData)
@@ -39,7 +38,11 @@
 #' # pdf("path-for-diagram.pdf")
 #' # hasse(randomData, NULL, list(newpage = FALSE))
 #' # dev.off()
-#' @import Rgraphviz
+#' @importFrom Rgraphviz agopen
+#' @importFrom graph graphAM
+#' @importFrom graph subGraph
+#' @importFrom grid grid.newpage
+#' @importFrom grid grid.draw
 #' @export
 hasse <- function(data, labels = c(), parameters = list()) {
   stopifnot(is.matrix(data))
@@ -280,6 +283,8 @@ extractGroups <- function(data) {
 }
 
 # Node height by labels (in inches)
+#' @importFrom grid convertY
+#' @importFrom grid unit
 nHi <- function(labels, margin) {
   result <- unit(1, "lines") + unit(margin$tb * 2, "inch")
   if (length(labels) > 1)
@@ -289,6 +294,9 @@ nHi <- function(labels, margin) {
 }
 
 # Node width by labels (in inches)
+#' @importFrom grid convertX
+#' @importFrom grid unit
+#' @importFrom grid stringWidth
 nWi <- function(labels, margin) {
   result <- unit(0, "inch")
   for (label in labels)
@@ -299,6 +307,18 @@ nWi <- function(labels, margin) {
   return (convertX(result, "inches", TRUE))
 }
 
+#' @importFrom grid viewport
+#' @importFrom grid pushViewport
+#' @importFrom grid grid.rect
+#' @importFrom grid grid.roundrect
+#' @importFrom grid grid.clip
+#' @importFrom grid convertWidth
+#' @importFrom grid stringWidth
+#' @importFrom grid unit
+#' @importFrom grid convertHeight
+#' @importFrom grid grid.text
+#' @importFrom grid gpar
+#' @importFrom grid popViewport
 drawNode <- function(x, y, width, height, labels, shape, margin) {
   vp <- viewport(x,
                  y,
@@ -342,11 +362,30 @@ drawNode <- function(x, y, width, height, labels, shape, margin) {
   popViewport()
 }
 
+
+#' @importFrom grid grob
 hasseGrob <- function(graph, labels, parameters) {
   grob(graph = graph, labels = labels, parameters = parameters, cl = "hasseGrob")
 }
 
 #' @importFrom grid drawDetails
+#' @importFrom grid viewport
+#' @importFrom grid unit
+#' @importFrom grid pushViewport
+#' @importFrom grid grid.lines
+#' @importFrom grid popViewport
+#' @importFrom Rgraphviz upRight
+#' @importFrom Rgraphviz boundBox
+#' @importFrom Rgraphviz botLeft
+#' @importFrom Rgraphviz getX
+#' @importFrom Rgraphviz getY
+#' @importFrom Rgraphviz AgNode
+#' @importFrom Rgraphviz getNodeCenter
+#' @importFrom Rgraphviz getNodeRW
+#' @importFrom Rgraphviz getNodeLW
+#' @importFrom Rgraphviz getNodeHeight
+#' @importFrom Rgraphviz AgEdge
+#' @importFrom Rgraphviz bezierPoints
 #' @export
 drawDetails.hasseGrob <- function(x, ...) {
   g <- x$graph
@@ -456,6 +495,7 @@ generateRandomData <- function(nrNodes, minGraphs = 1, density = 0.5) {
 }
 
 
+#' @importFrom stats runif
 generateRandomGraph <- function(nrNodes, density = 0.2) {
   result <- matrix(data = FALSE, nrow = nrNodes, ncol = nrNodes)
   
