@@ -11,14 +11,14 @@ reduction of a finite partially ordered set.
 Installation
 ------------
 
-[Install Rgraphviz](https://bioconductor.org/packages/release/bioc/html/Rgraphviz.html "Rgraphviz"):
+Install [Rgraphviz](https://bioconductor.org/packages/release/bioc/html/Rgraphviz.html "Rgraphviz"):
 
-  source("https://bioconductor.org/biocLite.R")
-  biocLite("Rgraphviz")
+    source("https://bioconductor.org/biocLite.R")
+    biocLite("Rgraphviz")
 
 Then get the latest version from directly from CRAN:
 
-  install.packages("hasseDiagram")
+    install.packages("hasseDiagram")
 
 License
 -------
