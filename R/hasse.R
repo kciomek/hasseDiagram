@@ -369,6 +369,7 @@ hasseGrob <- function(graph, labels, parameters) {
   grob(graph = graph, labels = labels, parameters = parameters, cl = "hasseGrob")
 }
 
+#' @importFrom grid arrow
 #' @importFrom grid drawDetails
 #' @importFrom grid viewport
 #' @importFrom grid unit
