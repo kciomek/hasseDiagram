@@ -11,8 +11,8 @@
 #' ('a' + element index) in case \code{rownames(data)} is \code{NULL}.
 #' @param parameters List with named elements:
 #' \itemize{
-#' \item \code{arrow} -- direction of arrows: \code{"forward"}, \code{"backward"}
-#' or \code{"both"} (default \code{"forward"}),
+#' \item \code{arrow} -- direction of arrows: \code{"forward"}, \code{"backward"},
+#' \code{"both"} or \code{"none"} (default \code{"forward"}),
 #' \item \code{cluster} -- whether to cluster elements which have same parents
 #' and children and are connected all to all (see first commented example) (default \code{TRUE}),
 #' \item \code{newpage} -- whether to call \code{grid.newpage()} before drawing
@@ -61,8 +61,11 @@ hasse <- function(data, labels = c(), parameters = list()) {
     parameters$transitiveReduction <- TRUE
   if (!is.character(parameters$shape))
     parameters$shape <- "roundrect"
-  if (!is.character(parameters$arrow))
-    parameters$arrows = "forward"
+  if (is.character(parameters$arrow)) {
+	stopifnot(parameters$arrow %in% c("forward", "backward", "both", "none"))
+  } else {
+    parameters$arrow = "forward"
+  }
   if (is.null(parameters$margin)) {
     parameters$margin <- list()
     parameters$margin$rl <- parameters$margin$tb <- 0.125
@@ -413,7 +416,7 @@ drawDetails.hasseGrob <- function(x, ...) {
   }
   
   # Draw edges
-  dir <- x$parameters$arrows
+  dir <- x$parameters$arrow
   
   for (edge in AgEdge(g)) {
     nrLines <- length(edge@splines)
