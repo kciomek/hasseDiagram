@@ -6,9 +6,9 @@
 #' @param data \emph{n} x \emph{n} matrix, which represents partial order of \emph{n}
 #' elements in set. Each cell \code{[i, j]} has value \code{TRUE}
 #' iff \emph{i}-th element precedes \emph{j}-th element.
-#' @param labels Vector containing labels of elements. If \code{NULL} names
-#' of rows of parameter \code{data} will be used or labels will be generated
-#' ('a' + element index) in case \code{rownames(data)} is \code{NULL}.
+#' @param labels Vector containing labels of elements. If missing or \code{NULL} then
+#' \code{data} row names will be used as labels. If \code{rownames(data)} are not present,
+#' the labels will be generated as ('a' + element index).
 #' @param parameters List with named elements:
 #' \itemize{
 #' \item \code{arrow} -- direction of arrows: \code{"forward"}, \code{"backward"},
