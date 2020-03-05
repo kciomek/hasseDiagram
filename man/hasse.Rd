@@ -11,14 +11,14 @@ hasse(data, labels = c(), parameters = list())
 elements in set. Each cell \code{[i, j]} has value \code{TRUE}
 iff \emph{i}-th element precedes \emph{j}-th element.}
 
-\item{labels}{Vector containing labels of elements. If \code{NULL} names
-of rows of parameter \code{data} will be used or labels will be generated
-('a' + element index) in case \code{rownames(data)} is \code{NULL}.}
+\item{labels}{Vector containing labels of elements. If missing or \code{NULL} then
+\code{data} row names will be used as labels. If \code{rownames(data)} are not present,
+the labels will be generated as ('a' + element index).}
 
 \item{parameters}{List with named elements:
 \itemize{
-\item \code{arrow} -- direction of arrows: \code{"forward"}, \code{"backward"}
-or \code{"both"} (default \code{"forward"}),
+\item \code{arrow} -- direction of arrows: \code{"forward"}, \code{"backward"},
+\code{"both"} or \code{"none"} (default \code{"forward"}),
 \item \code{cluster} -- whether to cluster elements which have same parents
 and children and are connected all to all (see first commented example) (default \code{TRUE}),
 \item \code{newpage} -- whether to call \code{grid.newpage()} before drawing
