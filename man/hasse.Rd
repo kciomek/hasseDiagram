@@ -23,8 +23,8 @@ the labels will be generated as ('a' + element index).}
 and children and are connected all to all (see first commented example) (default \code{TRUE}),
 \item \code{newpage} -- whether to call \code{grid.newpage()} before drawing
 (default \code{TRUE}),
-\item \code{shape} -- shape of diagram nodes: \code{"roundrect"}
-or \code{"rect"} (default \code{"roundrect"}),
+\item \code{shape} -- shape of diagram nodes: \code{"roundrect"}, \code{"rect"}
+or \code{"none"} (default \code{"roundrect"}),
 \item \code{transitiveReduction} -- whether to perform transitive reduction
 (default \code{TRUE}).
 }}

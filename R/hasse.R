@@ -17,8 +17,8 @@
 #' and children and are connected all to all (see first commented example) (default \code{TRUE}),
 #' \item \code{newpage} -- whether to call \code{grid.newpage()} before drawing
 #' (default \code{TRUE}),
-#' \item \code{shape} -- shape of diagram nodes: \code{"roundrect"}
-#' or \code{"rect"} (default \code{"roundrect"}),
+#' \item \code{shape} -- shape of diagram nodes: \code{"roundrect"}, \code{"rect"}
+#' or \code{"none"} (default \code{"roundrect"}),
 #' \item \code{transitiveReduction} -- whether to perform transitive reduction
 #' (default \code{TRUE}).
 #' }
@@ -323,43 +323,42 @@ nWi <- function(labels, margin) {
 #' @importFrom grid grid.text
 #' @importFrom grid gpar
 #' @importFrom grid popViewport
-drawNode <- function(x, y, width, height, labels, shape, margin) {
+drawNode <- function(x, y, width, height, labels, parameters) {
   vp <- viewport(x,
                  y,
                  width,
                  height,
-                 xscale = c(0, nWi(labels, margin)),
-                 yscale = c(0, nHi(labels, margin)))
+                 xscale = c(0, nWi(labels, parameters$margin)),
+                 yscale = c(0, nHi(labels, parameters$margin)))
   pushViewport(vp)
   
-  if (shape == "rect")
+  if (parameters$shape == "rect")
     grid.rect()
-  else if (shape == "roundrect")
+  else if (parameters$shape == "roundrect")
     grid.roundrect()
-  else
+  else if (parameters$shape != "none")
     stop(paste("Unsupported node shape '", shape, "'.", sep = ""))
   
   grid.clip()
   
   if (length(labels) == 1) {
-    cex <- min(1.0 / (convertWidth(stringWidth(labels) + unit(margin$rl * 2, "inch"), "npc", TRUE)),
-               1.0 / (convertHeight(unit(1, "lines") + unit(margin$tb * 2, "inch"), "npc", TRUE)))
+    cex <- min(1.0 / (convertWidth(stringWidth(labels) + unit(parameters$margin$rl * 2, "inch"), "npc", TRUE)),
+               1.0 / (convertHeight(unit(1, "lines") + unit(parameters$margin$tb * 2, "inch"), "npc", TRUE)))
     
     grid.text(labels[1], gp = gpar(cex = cex))
   }
   else {
-    xCenter <- unit(margin$orl, "native")
+    xCenter <- unit(parameters$margin$orl, "native")
     yCenter <- unit(0.5, "npc")
     
     for (label in labels) {
-      drawNode(xCenter + unit(nWi(label, margin), "native") * 0.5,
+      drawNode(xCenter + unit(nWi(label, parameters$margin), "native") * 0.5,
                yCenter,
-               unit(nWi(label, margin), "native"),
-               unit(nHi(label, margin), "native"),
+               unit(nWi(label, parameters$margin), "native"),
+               unit(nHi(label, parameters$margin), "native"),
                label,
-               shape,
-               margin)
-      xCenter <- xCenter + unit(nWi(label, margin), "native") + unit(margin$orl, "native")
+               parameters)
+      xCenter <- xCenter + unit(nWi(label, parameters$margin), "native") + unit(parameters$margin$orl, "native")
     }
   }
   
@@ -412,7 +411,7 @@ drawDetails.hasseGrob <- function(x, ...) {
     width <- unit(getNodeRW(agNode) + getNodeLW(agNode), "native")
     height <- unit(getNodeHeight(agNode), "native")
     
-    drawNode(centerX, centerY, width, height, unlist(x$labels[agNode@name]), x$parameters$shape, x$parameters$margin)
+    drawNode(centerX, centerY, width, height, unlist(x$labels[agNode@name]), x$parameters)
   }
   
   # Draw edges
