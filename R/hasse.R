@@ -53,6 +53,7 @@
 #' @importFrom grid grid.newpage
 #' @importFrom grid grid.draw
 #' @importFrom methods as
+#' @importFrom grDevices colors
 #' @export
 hasse <- function(data, labels = c(), parameters = list()) {
   stopifnot(is.matrix(data))
@@ -375,7 +376,7 @@ drawNode <- function(x, y, width, height, labels, parameters, isInner=FALSE) {
     else if (parameters$shape == "roundrect")
       grid.roundrect(gp = gp)
     else
-      stop(paste("Unsupported node shape '", shape, "'.", sep = ""))
+      stop(paste("Unsupported node shape '", parameters$shape, "'.", sep = ""))
   }
   
   grid.clip()
