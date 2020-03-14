@@ -6,19 +6,28 @@
 #' @param data \emph{n} x \emph{n} matrix, which represents partial order of \emph{n}
 #' elements in set. Each cell \code{[i, j]} has value \code{TRUE}
 #' iff \emph{i}-th element precedes \emph{j}-th element.
-#' @param labels Vector containing labels of elements. If \code{NULL} names
-#' of rows of parameter \code{data} will be used or labels will be generated
-#' ('a' + element index) in case \code{rownames(data)} is \code{NULL}.
+#' @param labels Vector containing labels of elements. If missing or \code{NULL} then
+#' \code{data} row names will be used as labels. If \code{rownames(data)} are not present,
+#' the labels will be generated as ('a' + element index).
 #' @param parameters List with named elements:
 #' \itemize{
-#' \item \code{arrow} -- direction of arrows: \code{"forward"}, \code{"backward"}
-#' or \code{"both"} (default \code{"forward"}),
-#' \item \code{cluster} -- whether to cluster elements which have same parents
+#' \item \code{arrow} -- direction of arrows: \code{"forward"}, \code{"backward"},
+#' \code{"both"} or \code{"none"} (default \code{"forward"}),
+#' \item \code{cluster} -- whether to cluster elements which have the same parents
 #' and children and are connected all to all (see first commented example) (default \code{TRUE}),
+#' \item \code{clusterMerge} -- merge clustered nodes
+#' within single node frame (default \code{FALSE}),
+#' \item \code{clusterNonAdjacent} -- to allow clustering elements 
+#' that are not mutually adjacent (default \code{FALSE}),
+#' \item \code{edgeColor} -- edge color, from colors() (default \code{"black"}),
 #' \item \code{newpage} -- whether to call \code{grid.newpage()} before drawing
 #' (default \code{TRUE}),
-#' \item \code{shape} -- shape of diagram nodes: \code{"roundrect"}
-#' or \code{"rect"} (default \code{"roundrect"}),
+#' \item \code{nodeColor} -- node frame color, from colors() (default \code{"black"}),
+#' \item \code{margin} -- node margins, a list with 4 numerical items: 
+#' \code{"tb"} for top-bottom margin, \code{"rl"} for right-left margin,
+#' \code{"otb"} and \code{"orl"} for outer margin when multiple labels are present,
+#' \item \code{shape} -- shape of diagram nodes: \code{"roundrect"}, \code{"rect"}
+#' or \code{"none"} (default \code{"roundrect"}),
 #' \item \code{transitiveReduction} -- whether to perform transitive reduction
 #' (default \code{TRUE}).
 #' }
@@ -53,20 +62,49 @@ hasse <- function(data, labels = c(), parameters = list()) {
   stopifnot(is.list(parameters))
   
   # Set defaults
-  if (is.null(parameters$newpage))
+  if (is.null(parameters$newpage)) {
     parameters$newpage <- TRUE
-  if (is.null(parameters$cluster))
+  } else {
+  	stopifnot(is.logical(parameters$newpage))
+  }
+  if (is.null(parameters[["cluster"]])) {
     parameters$cluster <- TRUE
+  } else {
+	stopifnot(is.logical(parameters$cluster))
+  }
+  if (is.null(parameters$clusterMerge)) {
+    parameters$clusterMerge <- FALSE
+  } else {
+	stopifnot(is.logical(parameters$clusterMerge))
+  }
+  if (is.null(parameters$clusterNonAdjacent)) {
+    parameters$clusterNonAdjacent <- FALSE
+  } else {
+	stopifnot(is.logical(parameters$clusterNonAdjacent))
+  }
   if (is.null(parameters$transitiveReduction))
     parameters$transitiveReduction <- TRUE
   if (!is.character(parameters$shape))
     parameters$shape <- "roundrect"
-  if (!is.character(parameters$arrow))
-    parameters$arrows = "forward"
+  if (is.character(parameters$arrow)) {
+	stopifnot(parameters$arrow %in% c("forward", "backward", "both", "none"))
+  } else {
+    parameters$arrow = "forward"
+  }
   if (is.null(parameters$margin)) {
     parameters$margin <- list()
     parameters$margin$rl <- parameters$margin$tb <- 0.125
     parameters$margin$orl <- parameters$margin$otb <- 0.08
+  }
+  if (is.character(parameters$edgeColor)) {
+	stopifnot(parameters$edgeColor %in% colors())
+  } else {
+  	parameters$edgeColor <- "black"
+  }
+  if (is.character(parameters$nodeColor)) {
+	stopifnot(parameters$nodeColor %in% colors())
+  } else {
+  	parameters$nodeColor <- "black"
   }
   
   nrNodes <- nrow(data)
@@ -91,7 +129,7 @@ hasse <- function(data, labels = c(), parameters = list()) {
   }
   
   # Cluster
-  groups <- extractGroups(data)
+  groups <- extractGroups(data, parameters$clusterNonAdjacent)
   toRemove <- c()
   
   for (group in groups) {
@@ -200,8 +238,8 @@ hasse <- function(data, labels = c(), parameters = list()) {
   graph <- as(graphAM(data, "directed"), "graphNEL")
   
   nAttrs <- list()
-  nAttrs$width <- sapply(labels, function(x) { nWi(x, parameters$margin) })
-  nAttrs$height <- sapply(labels, function(x) { nHi(x, parameters$margin) })
+  nAttrs$width <- sapply(labels, function(x) { nWi(x, parameters) })
+  nAttrs$height <- sapply(labels, function(x) { nHi(x, parameters) })
   nAttrs$fixedsize <- rep(TRUE, nrNodes)
   nAttrs <- lapply(nAttrs, function(x) { names(x) <- rownames(data); x})
   
@@ -227,8 +265,8 @@ hasse <- function(data, labels = c(), parameters = list()) {
   #return (hGrob)
 }
 
-isGroup <- function(data, i, j) {
-  if (data[i, j] == TRUE && data[j, i] == TRUE) {
+isGroup <- function(data, i, j, groupNonAdjacent) {
+  if ((data[i, j] == TRUE && data[j, i] == TRUE) || groupNonAdjacent == TRUE) {
     iParents <- data[, i]
     jParents <- data[, j]
     iChildren <- data[i, ]
@@ -247,19 +285,19 @@ isGroup <- function(data, i, j) {
   return (FALSE)
 }
 
-extractGroups <- function(data) {
+extractGroups <- function(data, groupNonAdjacent) {
   result <- list()
   itemGroup <- seq_len(nrow(data))
   
   for (i in seq_len(nrow(data))) {
     for (j in seq_len(nrow(data))) {
-      if (isGroup(data, i, j)) {
+      if (isGroup(data, i, j, groupNonAdjacent)) {
         iGroup <- which(itemGroup == itemGroup[i])
         mergable <- TRUE
         
         for (k in iGroup) {
           if (k != i) {
-            if (!isGroup(data, j, k)) {
+            if (!isGroup(data, j, k, groupNonAdjacent)) {
               mergable <- FALSE
               break
             }
@@ -286,10 +324,10 @@ extractGroups <- function(data) {
 # Node height by labels (in inches)
 #' @importFrom grid convertY
 #' @importFrom grid unit
-nHi <- function(labels, margin) {
-  result <- unit(1, "lines") + unit(margin$tb * 2, "inch")
-  if (length(labels) > 1)
-    result <- result + unit(margin$otb * 2, "inch")
+nHi <- function(labels, parameters) {
+  result <- unit(1, "lines") + unit(parameters$margin$tb * 2, "inch")
+  if (length(labels) > 1 && parameters$clusterMerge == FALSE)
+    result <- result + unit(parameters$margin$otb * 2, "inch")
   
   return (convertY(result, "inches", TRUE))
 }
@@ -298,12 +336,12 @@ nHi <- function(labels, margin) {
 #' @importFrom grid convertX
 #' @importFrom grid unit
 #' @importFrom grid stringWidth
-nWi <- function(labels, margin) {
+nWi <- function(labels, parameters) {
   result <- unit(0, "inch")
   for (label in labels)
-    result <- result + stringWidth(label) + unit(margin$rl * 2, "inch")
-  if (length(labels) > 1)
-    result <- result + (length(labels) + 1) * unit(margin$orl, "inch")
+    result <- result + stringWidth(label) + unit(parameters$margin$rl * 2, "inch")
+  if (length(labels) > 1 && parameters$clusterMerge == FALSE)
+    result <- result + (length(labels) + 1) * unit(parameters$margin$orl, "inch")
   
   return (convertX(result, "inches", TRUE))
 }
@@ -320,43 +358,49 @@ nWi <- function(labels, margin) {
 #' @importFrom grid grid.text
 #' @importFrom grid gpar
 #' @importFrom grid popViewport
-drawNode <- function(x, y, width, height, labels, shape, margin) {
+drawNode <- function(x, y, width, height, labels, parameters, isInner=FALSE) {
   vp <- viewport(x,
                  y,
                  width,
                  height,
-                 xscale = c(0, nWi(labels, margin)),
-                 yscale = c(0, nHi(labels, margin)))
+                 xscale = c(0, nWi(labels, parameters)),
+                 yscale = c(0, nHi(labels, parameters)))
   pushViewport(vp)
   
-  if (shape == "rect")
-    grid.rect()
-  else if (shape == "roundrect")
-    grid.roundrect()
-  else
-    stop(paste("Unsupported node shape '", shape, "'.", sep = ""))
+  if (parameters$shape != "none" && (isInner == FALSE || parameters$clusterMerge == FALSE)) {
+    gp <- gpar(col = parameters$nodeColor)
+  
+    if (parameters$shape == "rect")
+      grid.rect(gp = gp)
+    else if (parameters$shape == "roundrect")
+      grid.roundrect(gp = gp)
+    else
+      stop(paste("Unsupported node shape '", shape, "'.", sep = ""))
+  }
   
   grid.clip()
   
   if (length(labels) == 1) {
-    cex <- min(1.0 / (convertWidth(stringWidth(labels) + unit(margin$rl * 2, "inch"), "npc", TRUE)),
-               1.0 / (convertHeight(unit(1, "lines") + unit(margin$tb * 2, "inch"), "npc", TRUE)))
+    cex <- min(1.0 / (convertWidth(stringWidth(labels) + unit(parameters$margin$rl * 2, "inch"), "npc", TRUE)),
+               1.0 / (convertHeight(unit(1, "lines") + unit(parameters$margin$tb * 2, "inch"), "npc", TRUE)))
     
     grid.text(labels[1], gp = gpar(cex = cex))
   }
   else {
-    xCenter <- unit(margin$orl, "native")
+    xCenter <- unit(ifelse(parameters$clusterMerge == FALSE, parameters$margin$orl, 0.0), "native")
     yCenter <- unit(0.5, "npc")
     
     for (label in labels) {
-      drawNode(xCenter + unit(nWi(label, margin), "native") * 0.5,
+      drawNode(xCenter + unit(nWi(label, parameters), "native") * 0.5,
                yCenter,
-               unit(nWi(label, margin), "native"),
-               unit(nHi(label, margin), "native"),
+               unit(nWi(label, parameters), "native"),
+               unit(nHi(label, parameters), "native"),
                label,
-               shape,
-               margin)
-      xCenter <- xCenter + unit(nWi(label, margin), "native") + unit(margin$orl, "native")
+               parameters,
+			   TRUE)
+      xCenter <- xCenter + unit(nWi(label, parameters), "native") 
+	  if (parameters$clusterMerge == FALSE)
+	  	xCenter <- xCenter + unit(parameters$margin$orl, "native")
     }
   }
   
@@ -409,15 +453,16 @@ drawDetails.hasseGrob <- function(x, ...) {
     width <- unit(getNodeRW(agNode) + getNodeLW(agNode), "native")
     height <- unit(getNodeHeight(agNode), "native")
     
-    drawNode(centerX, centerY, width, height, unlist(x$labels[agNode@name]), x$parameters$shape, x$parameters$margin)
+    drawNode(centerX, centerY, width, height, unlist(x$labels[agNode@name]), x$parameters)
   }
   
   # Draw edges
-  dir <- x$parameters$arrows
+  dir <- x$parameters$arrow
+  gp <- gpar(col = x$parameters$edgeColor)
   
   for (edge in AgEdge(g)) {
     nrLines <- length(edge@splines)
-    
+	
     for (i in seq_len(nrLines)) {
       arrow <- NULL
       arrowEnds <- NULL
@@ -443,9 +488,9 @@ drawDetails.hasseGrob <- function(x, ...) {
                        ends = arrowEnds,
                        type = "open")
       }
-      
+	  
       bp <- bezierPoints(edge@splines[[i]])
-      grid.lines(bp[, 1], bp[, 2], default.units = "native", arrow = arrow)
+      grid.lines(bp[, 1], bp[, 2], default.units = "native", arrow = arrow, gp = gp)
     }
   }
   
