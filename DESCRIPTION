@@ -1,8 +1,8 @@
 Package: hasseDiagram
 Type: Package
 Title: Drawing Hasse Diagram 
-Version: 0.1.3
-Date: 2017-02-24
+Version: 0.2.0
+Date: 2020-03-14
 Author: Krzysztof Ciomek
 Maintainer: Krzysztof Ciomek <k.ciomek@gmail.com>
 URL: https://github.com/kciomek/hasseDiagram
