@@ -2,7 +2,7 @@ Package: hasseDiagram
 Type: Package
 Title: Drawing Hasse Diagram 
 Version: 0.2.0
-Date: 2020-03-14
+Date: 2021-06-10
 Author: Krzysztof Ciomek
 Maintainer: Krzysztof Ciomek <k.ciomek@gmail.com>
 URL: https://github.com/kciomek/hasseDiagram
@@ -10,4 +10,4 @@ Depends: Rgraphviz (>= 2.6.0), grid (>= 3.0.2), graph
 Imports: methods
 Description: Drawing Hasse diagram - visualization of transitive reduction of a finite partially ordered set.
 License: MIT + file LICENSE
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
